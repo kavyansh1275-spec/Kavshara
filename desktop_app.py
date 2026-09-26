@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import messagebox, scrolledtext
 
 from brain import Brain
-from permissions import get_permissions, request_desktop_access
+from permissions import get_permissions, request_desktop_access, revoke_desktop_access
 from voice_interface import VoiceInterface
 
 
@@ -38,6 +38,7 @@ class KavsharaDesktopApp:
         actions.pack(fill="x", padx=12, pady=(0, 10))
         tk.Button(actions, text="Desktop Access", command=self.request_access).pack(side="left")
         tk.Button(actions, text="Refresh Status", command=self.refresh_status).pack(side="left", padx=5)
+        tk.Button(actions, text="Revoke Access", command=self.revoke_access).pack(side="left", padx=5)
         tk.Button(actions, text="Clear", command=self.clear).pack(side="right")
 
         self._append("Kavshara", "Ready. Ask me to research, code, work with approved files, or open an application.")
@@ -60,6 +61,11 @@ class KavsharaDesktopApp:
     def request_access(self):
         result = request_desktop_access()
         self._append("Kavshara", result["status"].capitalize() + " desktop access.")
+        self.refresh_status()
+
+    def revoke_access(self):
+        revoke_desktop_access()
+        self._append("Kavshara", "Desktop access revoked.")
         self.refresh_status()
 
     def clear(self):
