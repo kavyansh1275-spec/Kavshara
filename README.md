@@ -15,6 +15,8 @@ Local-first personal AI assistant in Python.
 - Project summaries and entrypoint detection
 - Cross-file text search
 - Automatic tool-result feedback
+- Persistent project memory
+- Safe project snapshots and change comparison
 
 ## Architecture
 
