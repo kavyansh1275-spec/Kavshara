@@ -2,28 +2,69 @@
 
 Local-first personal AI assistant in Python.
 
-## V1 agent foundation
-- Ollama/local model
+## Current capabilities
+
+- Conversational CLI
+- Ollama/local model support
 - Persistent JSON memory
-- Model-driven agent loop
+- Model-driven multi-step agent loop
 - Safe workspace filesystem tools
-- Extensible tool registry
+- Python syntax inspection
+- Controlled Python execution
+- Automatic tool-result feedback
+
+## Architecture
+
+```
+User
+  ↓
+Brain
+  ↓
+Agent
+  ↓
+Choose tool
+  ↓
+Execute
+  ↓
+Inspect result
+  ↓
+Choose next action
+  ↓
+Final response
+```
 
 ## Run
+
 ```powershell
 pip install -r requirements.txt
 python main.py
 ```
 
 Try:
+
 ```
-list the files in my workspace
-create a file called hello.txt containing Hello from Kavshara
+Create a Python calculator at projects/calculator.py, test it, and fix any syntax errors.
 ```
 
-Kavshara can decide when to use a tool, execute it, inspect the result, and continue.
+Kavshara can now:
+1. inspect the workspace
+2. create/edit files
+3. inspect Python syntax
+4. run Python files
+5. read execution errors
+6. make another change
+7. test again
+8. report the result
+
+## Safety boundary
+
+Filesystem operations are restricted to `workspace/`.
+Python execution is limited to workspace Python files and has a short timeout.
+There is no general-purpose shell tool.
 
 ## Commands
-`/help` `/status` `/remember <text>` `/exit`
 
-Filesystem tools are restricted to `workspace/`.
+- `/help`
+- `/status`
+- `/remember <text>`
+- `/exit`
