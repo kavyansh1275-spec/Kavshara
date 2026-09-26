@@ -28,6 +28,7 @@ Local-first personal AI assistant in Python.
 - Safe self-testing and static QA
 - English, Hindi, and Hinglish conversation support
 - Explicit desktop-access permission layer
+- Controlled Windows desktop gateway for common user folders
 
 ## Architecture
 
@@ -82,7 +83,8 @@ Kavshara can now:
 17. run safe QA checks before completion
 18. respect desktop permissions before local access
 19. communicate naturally in the user's language
-20. compare changes and report the result
+20. use controlled desktop access when permitted
+21. compare changes and report the result
 
 ## Safety boundary
 
