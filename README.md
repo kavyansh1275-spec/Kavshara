@@ -25,6 +25,7 @@ Local-first personal AI assistant in Python.
 - Multi-source deep research
 - Structured long-term memory for facts, preferences, and episodes
 - Autonomous project-engineering plans
+- Safe self-testing and static QA
 
 ## Architecture
 
@@ -76,7 +77,8 @@ Kavshara can now:
 14. compare multiple sources and identify uncertainty
 15. recall and store durable memory when useful
 16. execute and track autonomous engineering plans
-17. compare changes and report the result
+17. run safe QA checks before completion
+18. compare changes and report the result
 
 ## Safety boundary
 
