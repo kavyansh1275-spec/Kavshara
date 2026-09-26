@@ -4,7 +4,7 @@ from config import SYSTEM_PROMPT
 
 
 class Agent:
-    def __init__(self, provider, tools, memory, max_steps=8):
+    def __init__(self, provider, tools, memory, max_steps=10):
         self.provider = provider
         self.tools = tools
         self.memory = memory
@@ -15,21 +15,23 @@ class Agent:
             f"- {t['name']}: {t['description']}" for t in self.tools.descriptions()
         )
         return SYSTEM_PROMPT + """
-\nYou are an agent, not only a chatbot.
-For coding tasks, inspect existing files before changing them when useful. For substantial project work, create an engine plan and execute its steps. Mark steps active/completed/blocked as evidence changes. For questions requiring current or external information, use deep_research for multi-source research; use web_search and fetch_url for focused lookups instead of guessing. For important claims, compare sources and note disagreements or uncertainty. Store durable user facts and preferences with memory tools only when they are clearly useful long-term; use recall_memory when past context could materially improve the task. For desktop tasks, check desktop permissions and use the controlled desktop tools; never claim access to files you did not actually inspect. You can search approved user-content folders, inspect file metadata, list directories, read supported text files, and open approved files/folders. You can also write text files, create directories, copy files, and rename files/folders within those approved roots. Never delete files, overwrite an existing destination during rename, or access paths outside the approved roots. To open an application, discover it with list_applications first, then launch only the returned shortcut. Use speak when spoken output is explicitly requested or when a voice-mode interface invokes it. Prefer multiple sources for important claims and distinguish retrieved facts from your own reasoning. For complex work, create a persistent task with clear steps and update its progress as you work. For reusable workflows, skills, project versions, or knowledge, use the advanced V11-V20 tools. Keep workflows disabled until the user explicitly enables them. Cloud model routing is opt-in only.
-Before changing an unfamiliar project, use project_summary or scan_project and find_in_project to understand its structure. Load get_project_memory for existing projects, create_snapshot before substantial multi-file changes, then compare_snapshot and save_project_memory after changes.\nAfter edits, use validate_project for Python/JSON projects. Then inspect_python and run_python when appropriate. Use qa_project after substantial changes to catch Python/JSON issues before reporting completion.
-If a tool returns an error, diagnose it and try a reasonable correction.
-Do not claim a task is complete until the available evidence supports it.
 
-AVAILABLE TOOLS:
-""" + (tool_text or "- None.") + """
+CODING WORKFLOW:
+- For coding requests, first inspect relevant files/project structure when needed.
+- Use the coding and project tools to create or edit code.
+- Use validation, inspection, and test tools after meaningful changes.
+- Prefer a direct implementation over a long explanation.
+- You may use approved workspace tools for the coding project.
+- Do not use research, workflow, knowledge-graph, cloud-routing, or unrelated automation tools unless the user explicitly asks for that capability and it is actually available.
 
 TOOL PROTOCOL:
 When a tool is needed, respond with ONLY valid JSON:
 {"type":"tool_call","tool":"TOOL_NAME","arguments":{}}
 Never invent tool names or arguments.
 After a tool result, continue the task or provide the final answer.
-"""
+
+AVAILABLE CODING TOOLS:
+""" + (tool_text or "- None.")
 
     def _parse_tool_call(self, text):
         candidates = [text]
@@ -68,11 +70,10 @@ After a tool result, continue the task or provide the final answer.
             if not call:
                 return reply
 
-            tool_name = call["tool"]
             try:
-                result = self.tools.execute(tool_name, call.get("arguments", {}))
+                result = self.tools.execute(call["tool"], call.get("arguments", {}))
             except Exception as exc:
-                result = {"error": str(exc), "tool": tool_name}
+                result = {"error": str(exc), "tool": call["tool"]}
 
             messages.append({"role": "assistant", "content": reply})
             messages.append(
@@ -81,9 +82,9 @@ After a tool result, continue the task or provide the final answer.
                     "content": (
                         f"TOOL RESULT (step {step + 1}):\n"
                         + json.dumps(result, ensure_ascii=False, default=str)
-                        + "\n\nContinue the task. Verify your work when appropriate."
+                        + "\n\nContinue the coding task and verify your work when appropriate."
                     ),
                 }
             )
 
-        return "I reached my tool-step limit before completing the task."
+        return "Maine task ko safely stop kiya because tool-step limit reach ho gayi. Agar kaam incomplete hai, hum next run mein continue kar sakte hain."
