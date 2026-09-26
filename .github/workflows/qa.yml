@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install PortAudio build dependency
+        run: sudo apt-get update && sudo apt-get install -y portaudio19-dev
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -20,6 +22,6 @@ jobs:
       - name: Compile Python
         run: python -m compileall -q .
       - name: Import core modules
-        run: python -c "import agent, brain, builtin_tools, desktop_tools, web_tools, memory_tools, qa_tools"
+        run: python -c "import agent, brain, builtin_tools, desktop_tools, web_tools, memory_tools, qa_tools, voice_interface"
       - name: Smoke test web URL policy
         run: python -c "from web_tools import fetch_url; assert 'not allowed' in fetch_url('http://127.0.0.1:11434').get('error','').lower()"
