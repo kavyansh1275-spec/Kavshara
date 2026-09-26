@@ -174,7 +174,7 @@ def _allowed_target(path):
     return target, None
 
 
-def write_desktop_file(path, content):
+def write_desktop_file(path, content, overwrite=False):
     denied = _require_access()
     if denied:
         return denied
@@ -183,6 +183,8 @@ def write_desktop_file(path, content):
         return error
     if target.exists() and target.is_dir():
         return {"error": "Target is a directory."}
+    if target.exists() and not overwrite:
+        return {"error": "File already exists. Set overwrite=true only when replacement is explicitly requested."}
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(str(content), encoding="utf-8")
@@ -205,7 +207,7 @@ def create_directory(path):
         return {"status": "failed", "error": str(exc)}
 
 
-def copy_desktop_file(source, destination):
+def copy_desktop_file(source, destination, overwrite=False):
     denied = _require_access()
     if denied:
         return denied
@@ -217,6 +219,8 @@ def copy_desktop_file(source, destination):
         return error
     if not src.exists() or not src.is_file():
         return {"error": "Source file does not exist or is not a file."}
+    if dst.exists() and not overwrite:
+        return {"error": "Destination already exists. Set overwrite=true only when replacement is explicitly requested."}
     try:
         import shutil
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -280,9 +284,9 @@ def build_desktop_tools(registry):
     )
     registry.register("system_info", "Return basic Windows and Kavshara runtime information.", system_info)
     registry.register("open_url", "Open an http or https URL in the default browser. Argument: url.", open_url)
-    registry.register("write_desktop_file", "Write UTF-8 text to an approved user-content file. Arguments: path, content.", write_desktop_file)
+    registry.register("write_desktop_file", "Write UTF-8 text to an approved user-content file. Arguments: path, content, overwrite optional (default false).", write_desktop_file)
     registry.register("create_directory", "Create a directory inside approved user-content folders. Argument: path.", create_directory)
-    registry.register("copy_desktop_file", "Copy an approved file to another approved location. Arguments: source, destination.", copy_desktop_file)
+    registry.register("copy_desktop_file", "Copy an approved file to another approved location. Arguments: source, destination, overwrite optional (default false).", copy_desktop_file)
     registry.register("rename_desktop_path", "Rename an approved file or folder without overwriting an existing destination. Arguments: source, destination.", rename_desktop_path)
     return registry
 
