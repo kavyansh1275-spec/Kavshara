@@ -11,6 +11,7 @@ Commands:
   /status    Show Kavshara status
   /remember  Save something to memory
   /voice     Listen to one voice command
+  /access    Show desktop permission status
   /exit      Quit Kavshara
 """)
 
@@ -37,6 +38,11 @@ def main():
             continue
 
         command = user_input.lower()
+
+        if command == "/access":
+            from permissions import get_permissions
+            print(get_permissions())
+            continue
 
         if command == "/voice":
             interface = VoiceInterface(brain)
