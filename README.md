@@ -17,6 +17,8 @@ Local-first personal AI assistant in Python.
 - Automatic tool-result feedback
 - Persistent project memory
 - Safe project snapshots and change comparison
+- Project-wide Python/JSON validation
+- Automatic validation and debugging loop
 
 ## Architecture
 
@@ -61,7 +63,9 @@ Kavshara can now:
 7. read execution errors
 8. make another change
 9. test again
-10. report the result
+10. validate the project
+11. debug validation/runtime errors
+12. compare changes and report the result
 
 ## Safety boundary
 
