@@ -1,11 +1,10 @@
 from pathlib import Path
-import fnmatch
 
 WORKSPACE = Path("workspace").resolve()
 
 IGNORED_DIRS = {
     ".git", ".hg", ".svn", "__pycache__", ".venv", "venv",
-    "node_modules", ".next", "dist", "build", ".idea", ".vscode"
+    "node_modules", ".next", "dist", "build", ".idea", ".vscode", ".kavshara"
 }
 TEXT_EXTENSIONS = {
     ".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".scss",
