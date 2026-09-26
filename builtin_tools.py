@@ -157,6 +157,7 @@ def build_default_registry():
     from snapshot_tools import build_snapshot_tools
     from validation_tools import build_validation_tools
     from task_tools import build_task_tools
+    from web_tools import build_web_tools
 
     registry = ToolRegistry()
     registry.register("list_files", "List files/directories inside the workspace. Argument: path optional.", list_files)
@@ -168,4 +169,5 @@ def build_default_registry():
     build_snapshot_tools(registry)
     build_validation_tools(registry)
     build_task_tools(registry)
+    build_web_tools(registry)
     return registry
