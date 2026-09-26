@@ -1,35 +1,29 @@
 # Kavshara
 
-Kavshara is a local-first personal AI assistant built in Python.
+Local-first personal AI assistant in Python.
 
-## V1 goals
-
-- Conversational CLI
-- Ollama/local-model support
+## V1 agent foundation
+- Ollama/local model
 - Persistent JSON memory
-- Simple brain/router layer
-- Extensible tool interface
-- Clean foundation for coding, files, research, and automation skills
-
-## Requirements
-
-- Python 3.11+
-- Ollama installed and running locally
-- A local Ollama model (default: `qwen2.5:3b`)
+- Model-driven agent loop
+- Safe workspace filesystem tools
+- Extensible tool registry
 
 ## Run
-
 ```powershell
+pip install -r requirements.txt
 python main.py
 ```
 
-Then type a message. Use `/help` for commands and `/exit` to quit.
-
-## Configuration
-
-Set environment variables if needed:
-
-```powershell
-$env:KAVSHARA_MODEL="qwen2.5:3b"
-$env:OLLAMA_HOST="http://127.0.0.1:11434"
+Try:
 ```
+list the files in my workspace
+create a file called hello.txt containing Hello from Kavshara
+```
+
+Kavshara can decide when to use a tool, execute it, inspect the result, and continue.
+
+## Commands
+`/help` `/status` `/remember <text>` `/exit`
+
+Filesystem tools are restricted to `workspace/`.
