@@ -1,6 +1,7 @@
 from brain import Brain
 from config import APP_NAME
 from permissions import request_desktop_access
+from voice_interface import VoiceInterface
 
 
 def print_help():
@@ -9,6 +10,7 @@ Commands:
   /help      Show this help
   /status    Show Kavshara status
   /remember  Save something to memory
+  /voice     Listen to one voice command
   /exit      Quit Kavshara
 """)
 
@@ -35,6 +37,16 @@ def main():
             continue
 
         command = user_input.lower()
+
+        if command == "/voice":
+            interface = VoiceInterface(brain)
+            result = interface.voice_command()
+            if result.get("status") == "success":
+                print("You (voice) > " + result["heard"])
+                print("Kavshara > " + result["response"])
+            else:
+                print("Voice error > " + result.get("error", "No speech detected."))
+            continue
 
         if command == "/exit":
             print("Goodbye.")
