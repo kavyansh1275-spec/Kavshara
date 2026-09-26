@@ -35,15 +35,22 @@ def read_file(path):
     if not target.exists() or not target.is_file():
         return {"error": "File does not exist or is not a file"}
     text = target.read_text(encoding="utf-8")
-    return {"path": str(target.relative_to(WORKSPACE)), "content": text[:20000], "truncated": len(text) > 20000}
+    return {
+        "path": str(target.relative_to(WORKSPACE)),
+        "content": text[:20000],
+        "truncated": len(text) > 20000,
+    }
 
 
 def write_file(path, content):
     target = _safe_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(content, encoding="utf-8")
-    return {"path": str(target.relative_to(WORKSPACE)), "bytes": target.stat().st_size, "status": "written"}
-
+    return {
+        "path": str(target.relative_to(WORKSPACE)),
+        "bytes": target.stat().st_size,
+        "status": "written",
+    }
 
 
 PROJECT_MEMORY_FILE = Path("data/projects.json")
@@ -71,7 +78,16 @@ def save_project_memory(path=".", summary="", notes="", last_task="", status="ac
     data = _load_project_memory()
     old = data.get(key, {})
     now = datetime.now(timezone.utc).isoformat()
-    record = {"path": key, "summary": summary or old.get("summary", ""), "notes": notes or old.get("notes", ""), "last_task": last_task or old.get("last_task", ""), "status": status or old.get("status", "active"), "changed_files": changed_files if changed_files is not None else old.get("changed_files", []), "created_at": old.get("created_at", now), "updated_at": now}
+    record = {
+        "path": key,
+        "summary": summary or old.get("summary", ""),
+        "notes": notes or old.get("notes", ""),
+        "last_task": last_task or old.get("last_task", ""),
+        "status": status or old.get("status", "active"),
+        "changed_files": changed_files if changed_files is not None else old.get("changed_files", []),
+        "created_at": old.get("created_at", now),
+        "updated_at": now,
+    }
     data[key] = record
     PROJECT_MEMORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     PROJECT_MEMORY_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -114,41 +130,6 @@ def create_snapshot(path="."):
     return {"status": "created", "snapshot_id": snapshot_id, "file_count": len(manifest["files"])}
 
 
-def _load_snapshot(snapshot_id):
-    if not isinstance(snapshot_id, str) or snapshot_id in {"", ".", ".."} or "/" in snapshot_id or "\\\\" in snapshot_id:
-        raise ValueError("Invalid snapshot id.")
-    folder = SNAPSHOT_ROOT / snapshot_id
-    manifest_path = folder / "manifest.json"
-    if not manifest_path.is_file():
-        raise ValueError("Snapshot not found.")
-    return folder, json.loads(manifest_path.read_text(encoding="utf-8"))
-
-
-def compare_snapshot(snapshot_id, path="."):
-    folder, manifest = _load_snapshot(snapshot_id)
-    root = _safe_path(path)
-    if str(root.relative_to(WORKSPACE)) != manifest.get("project"):
-        return {"error": "Snapshot belongs to a different project path."}
-    old = {x["path"]: x["sha256"] for x in manifest.get("files", [])}
-    current = {p.relative_to(root).as_posix(): _sha256(p) for p in _snapshot_files(root) if p.stat().st_size <= MAX_SNAPSHOT_FILE_SIZE}
-    return {"snapshot_id": snapshot_id, "added": sorted(set(current)-set(old)), "modified": sorted(p for p in set(old)&set(current) if old[p] != current[p]), "deleted": sorted(set(old)-set(current))}
-
-
-def restore_snapshot(snapshot_id, path="."):
-    folder, manifest = _load_snapshot(snapshot_id)
-    root = _safe_path(path)
-    if str(root.relative_to(WORKSPACE)) != manifest.get("project"):
-        return {"error": "Snapshot belongs to a different project path."}
-    restored = []
-    for item in manifest.get("files", []):
-        source = folder / "files" / item["path"]
-        dest = root / item["path"]
-        if source.is_file():
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, dest)
-            restored.append(item["path"])
-    return {"status": "restored", "snapshot_id": snapshot_id, "restored_files": restored, "extra_current_files_kept": True}
-
 def build_default_registry():
     from tools import ToolRegistry
     from coding_tools import build_coding_tools
@@ -157,37 +138,20 @@ def build_default_registry():
     from snapshot_tools import build_snapshot_tools
     from validation_tools import build_validation_tools
     from task_tools import build_task_tools
-    from web_tools import build_web_tools
-    from research_tools import build_research_tools
     from memory_tools import build_memory_tools
-    from engine_tools import build_engine_tools
-    from qa_tools import build_qa_tools
-    from permissions import build_permission_tools
-    from desktop_tools import build_desktop_tools
-    from app_tools import build_app_tools
     from voice_tools import build_voice_tools
-    from voice_input_tools import build_voice_input_tools
-    from advanced_tools import build_advanced_tools
 
     registry = ToolRegistry()
-    registry.register("list_files", "List files/directories inside the workspace. Argument: path optional.", list_files)
-    registry.register("read_file", "Read a UTF-8 text file inside the workspace. Argument: path.", read_file)
-    registry.register("write_file", "Create or replace a UTF-8 text file inside the workspace. Arguments: path, content.", write_file)
+    registry.register("list_files", "List files/directories inside the coding workspace. Argument: path optional.", list_files)
+    registry.register("read_file", "Read a UTF-8 text file inside the coding workspace. Argument: path.", read_file)
+    registry.register("write_file", "Create or replace a UTF-8 text file inside the coding workspace. Arguments: path, content.", write_file)
+
     build_coding_tools(registry)
     build_project_tools(registry)
     build_project_memory_tools(registry)
     build_snapshot_tools(registry)
     build_validation_tools(registry)
     build_task_tools(registry)
-    build_web_tools(registry)
-    build_research_tools(registry)
     build_memory_tools(registry)
-    build_engine_tools(registry)
-    build_qa_tools(registry)
-    build_permission_tools(registry)
-    build_desktop_tools(registry)
-    build_app_tools(registry)
     build_voice_tools(registry)
-    build_voice_input_tools(registry)
-    build_advanced_tools(registry)
     return registry
