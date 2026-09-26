@@ -40,7 +40,7 @@ def main():
 
         if command == "/voice":
             interface = VoiceInterface(brain)
-            result = interface.voice_command()
+            result = interface.voice_command(speak_response=True)
             if result.get("status") == "success":
                 print("You (voice) > " + result["heard"])
                 print("Kavshara > " + result["response"])
