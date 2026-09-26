@@ -12,6 +12,7 @@ Commands:
   /remember  Save something to memory
   /voice     Listen to one voice command
   /access    Show desktop permission status
+  /revoke    Revoke desktop access
   /exit      Quit Kavshara
 """)
 
@@ -42,6 +43,11 @@ def main():
         if command == "/access":
             from permissions import get_permissions
             print(get_permissions())
+            continue
+
+        if command == "/revoke":
+            from permissions import revoke_desktop_access
+            print(revoke_desktop_access())
             continue
 
         if command == "/voice":
