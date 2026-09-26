@@ -32,6 +32,7 @@ Local-first personal AI assistant in Python.
 - Windows Start Menu application discovery and launching
 - Local Windows text-to-speech output
 - Speech-to-text input foundation
+- Interactive microphone voice commands
 
 ## Architecture
 
@@ -90,7 +91,8 @@ Kavshara can now:
 21. discover and launch approved Start Menu applications
 22. speak responses through Windows TTS when requested
 23. transcribe audio through speech recognition when available
-24. compare changes and report the result
+24. use interactive microphone voice commands
+25. compare changes and report the result
 
 ## Safety boundary
 
@@ -103,4 +105,5 @@ There is no general-purpose shell tool.
 - `/help`
 - `/status`
 - `/remember <text>`
+- `/voice`
 - `/exit`
