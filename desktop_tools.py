@@ -153,6 +153,20 @@ def get_file_info(path):
         return {"error": str(exc)}
 
 
+def open_url(url):
+    denied = _require_access()
+    if denied:
+        return denied
+    url = str(url).strip()
+    if not (url.startswith('https://') or url.startswith('http://')):
+        return {'error': 'Only http:// and https:// URLs are allowed.'}
+    try:
+        os.startfile(url)
+        return {'status': 'opened', 'url': url}
+    except OSError as exc:
+        return {'status': 'failed', 'error': str(exc)}
+
+
 def _allowed_target(path):
     target = Path(path).expanduser().resolve()
     if not _is_allowed(target):
@@ -265,6 +279,7 @@ def build_desktop_tools(registry):
         get_file_info,
     )
     registry.register("system_info", "Return basic Windows and Kavshara runtime information.", system_info)
+    registry.register("open_url", "Open an http or https URL in the default browser. Argument: url.", open_url)
     registry.register("write_desktop_file", "Write UTF-8 text to an approved user-content file. Arguments: path, content.", write_desktop_file)
     registry.register("create_directory", "Create a directory inside approved user-content folders. Argument: path.", create_directory)
     registry.register("copy_desktop_file", "Copy an approved file to another approved location. Arguments: source, destination.", copy_desktop_file)
