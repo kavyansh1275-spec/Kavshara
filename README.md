@@ -103,7 +103,7 @@ Kavshara can now:
 
 ## Safety boundary
 
-Workspace tools stay inside `workspace/`. Desktop tools are separately permission-gated and restricted to approved user-content folders. Python execution is limited to workspace Python files and has a short timeout. There is no general-purpose shell tool. Voice input is explicit/foreground-only and is not started automatically.
+Workspace tools stay inside `workspace/`. Desktop tools are separately permission-gated and restricted to approved user-content folders. File creation/copying refuses to overwrite existing files unless `overwrite=true` is explicitly supplied. Python execution is limited to workspace Python files and has a short timeout. There is no general-purpose shell tool. Voice input is explicit/foreground-only and is not started automatically.
 
 ## Commands
 
@@ -112,4 +112,9 @@ Workspace tools stay inside `workspace/`. Desktop tools are separately permissio
 - `/remember <text>`
 - `/voice`
 - `/access`
+- `/revoke`
 - `/exit`
+
+## Automated QA
+
+GitHub Actions runs Python compilation, core-module imports, and a web-fetch safety smoke test on pushes and pull requests.
