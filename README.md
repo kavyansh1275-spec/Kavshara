@@ -22,6 +22,7 @@ Local-first personal AI assistant in Python.
 - Persistent multi-step task planning and progress
 - Public web search and URL fetching
 - Current-information research workflow
+- Multi-source deep research
 
 ## Architecture
 
@@ -70,7 +71,8 @@ Kavshara can now:
 11. debug validation/runtime errors
 12. update task progress
 13. research current information when needed
-14. compare changes and report the result
+14. compare multiple sources and identify uncertainty
+15. compare changes and report the result
 
 ## Safety boundary
 
