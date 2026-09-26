@@ -4,7 +4,7 @@ from config import SYSTEM_PROMPT
 
 
 class Agent:
-    def __init__(self, provider, tools, memory, max_steps=6):
+    def __init__(self, provider, tools, memory, max_steps=8):
         self.provider = provider
         self.tools = tools
         self.memory = memory
@@ -14,11 +14,21 @@ class Agent:
         tool_text = "\n".join(
             f"- {t['name']}: {t['description']}" for t in self.tools.descriptions()
         )
-        return SYSTEM_PROMPT + "\n\nAvailable tools:\n" + (tool_text or "- None.") + """
-\n\nTOOL PROTOCOL:
-When a tool is needed, respond with ONLY:
+        return SYSTEM_PROMPT + """
+\nYou are an agent, not only a chatbot.
+For coding tasks, inspect existing files before changing them when useful.
+After writing Python code, use inspect_python and, when appropriate, run_python.
+If a tool returns an error, diagnose it and try a reasonable correction.
+Do not claim a task is complete until the available evidence supports it.
+
+AVAILABLE TOOLS:
+""" + (tool_text or "- None.") + """
+
+TOOL PROTOCOL:
+When a tool is needed, respond with ONLY valid JSON:
 {"type":"tool_call","tool":"TOOL_NAME","arguments":{}}
-Never invent a tool. After a tool result, continue the task or give the final answer.
+Never invent tool names or arguments.
+After a tool result, continue the task or provide the final answer.
 """
 
     def _parse_tool_call(self, text):
@@ -35,35 +45,45 @@ Never invent a tool. After a tool result, continue the task or give the final an
                 isinstance(data, dict)
                 and data.get("type") == "tool_call"
                 and isinstance(data.get("tool"), str)
+                and isinstance(data.get("arguments", {}), dict)
             ):
                 return data
         return None
 
     def run(self, user_message):
         messages = [
-            {"role": "system", "content": self._system_prompt()
-             + "\n\nSaved memory:\n" + self.memory.context()},
+            {
+                "role": "system",
+                "content": self._system_prompt()
+                + "\n\nSAVED MEMORY:\n"
+                + self.memory.context(),
+            },
             {"role": "user", "content": user_message},
         ]
 
-        for _ in range(self.max_steps):
+        for step in range(self.max_steps):
             reply = self.provider.chat(messages)
             call = self._parse_tool_call(reply)
 
             if not call:
                 return reply
 
+            tool_name = call["tool"]
             try:
-                result = self.tools.execute(call["tool"], call.get("arguments", {}))
+                result = self.tools.execute(tool_name, call.get("arguments", {}))
             except Exception as exc:
-                result = {"error": str(exc), "tool": call["tool"]}
+                result = {"error": str(exc), "tool": tool_name}
 
             messages.append({"role": "assistant", "content": reply})
-            messages.append({
-                "role": "user",
-                "content": "TOOL RESULT:\n"
-                + json.dumps(result, ensure_ascii=False, default=str)
-                + "\n\nContinue the task.",
-            })
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        f"TOOL RESULT (step {step + 1}):\n"
+                        + json.dumps(result, ensure_ascii=False, default=str)
+                        + "\n\nContinue the task. Verify your work when appropriate."
+                    ),
+                }
+            )
 
         return "I reached my tool-step limit before completing the task."
