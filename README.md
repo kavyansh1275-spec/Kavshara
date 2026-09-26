@@ -33,6 +33,10 @@ Local-first personal AI assistant in Python.
 - Local Windows text-to-speech output
 - Speech-to-text input foundation
 - Interactive microphone voice commands
+- Native Windows/Tkinter desktop chat interface
+- Explicit desktop-access status and controls
+- Controlled text-file creation, copying, renaming, and directory creation
+- Controlled HTTP/HTTPS browser opening
 
 ## Architecture
 
@@ -59,6 +63,9 @@ Final response
 ```powershell
 pip install -r requirements.txt
 python main.py
+
+# Optional desktop GUI
+python desktop_app.py
 ```
 
 Try:
@@ -96,9 +103,7 @@ Kavshara can now:
 
 ## Safety boundary
 
-Filesystem operations are restricted to `workspace/`.
-Python execution is limited to workspace Python files and has a short timeout.
-There is no general-purpose shell tool.
+Workspace tools stay inside `workspace/`. Desktop tools are separately permission-gated and restricted to approved user-content folders. Python execution is limited to workspace Python files and has a short timeout. There is no general-purpose shell tool. Voice input is explicit/foreground-only and is not started automatically.
 
 ## Commands
 
@@ -106,4 +111,5 @@ There is no general-purpose shell tool.
 - `/status`
 - `/remember <text>`
 - `/voice`
+- `/access`
 - `/exit`
