@@ -1,46 +1,38 @@
-import queue
-import threading
-import time
+import speech_recognition as sr
 
-from permissions import get_permissions
+from config import MODEL
+from voice_tools import speak
 
 
 class VoiceInterface:
+    """Foreground, push-to-talk voice interface for Kavshara."""
+
     def __init__(self, brain):
         self.brain = brain
-        self.stop_event = threading.Event()
-        self.events = queue.Queue()
 
     def listen_once(self):
-        if not get_permissions().get("desktop_access"):
-            return {"error": "Desktop access is not granted."}
-
-        try:
-            import speech_recognition as sr
-        except ImportError:
-            return {"error": "Install SpeechRecognition to use microphone input."}
-
         recognizer = sr.Recognizer()
         try:
             with sr.Microphone() as source:
-                recognizer.adjust_for_ambient_noise(source, duration=0.5)
-                print("Kavshara is listening...")
-                audio = recognizer.listen(source, timeout=8, phrase_time_limit=15)
+                print("Kavshara: Haan, bolo...")
+                recognizer.adjust_for_ambient_noise(source, duration=0.4)
+                audio = recognizer.listen(source, timeout=8, phrase_time_limit=20)
 
-            text = recognizer.recognize_google(audio, language="en-IN")
-            if not text.strip():
+            # en-IN handles common English/Hindi/Hinglish speech reasonably well.
+            text = recognizer.recognize_google(audio, language="en-IN").strip()
+            if not text:
                 return {"status": "empty"}
             return {"status": "success", "text": text}
         except sr.WaitTimeoutError:
-            return {"status": "timeout", "error": "No speech detected."}
+            return {"status": "timeout", "error": "Koi baat nahi, jab ready ho tab bolo."}
         except sr.UnknownValueError:
-            return {"status": "failed", "error": "I could not understand that."}
+            return {"status": "failed", "error": "Mujhe properly sunai nahi diya. Ek baar phir bolo."}
         except sr.RequestError as exc:
-            return {"status": "failed", "error": str(exc)}
+            return {"status": "failed", "error": f"Speech recognition service error: {exc}"}
         except OSError as exc:
             return {"status": "failed", "error": str(exc)}
 
-    def voice_command(self, speak_response=False):
+    def voice_command(self, speak_response=True):
         result = self.listen_once()
         if result.get("status") != "success":
             return result
@@ -48,43 +40,21 @@ class VoiceInterface:
         response = self.brain.respond(result["text"])
         spoken = False
         if speak_response:
-            try:
-                from voice_tools import speak
-                spoken = speak(response).get("status") == "success"
-            except Exception:
-                spoken = False
-        return {"status": "success", "heard": result["text"], "response": response, "spoken": spoken}
+            spoken = speak(response).get("status") == "success"
 
-    def stop(self):
-        self.stop_event.set()
-
-    def run_loop(self, callback=None, interval=0.2, speak_response=False):
-        if not get_permissions().get("desktop_access"):
-            return {"error": "Desktop access is not granted."}
-
-        self.stop_event.clear()
-        while not self.stop_event.is_set():
-            result = self.voice_command(speak_response=speak_response)
-            if callback:
-                callback(result)
-            if result.get("status") == "failed":
-                time.sleep(interval)
-        return {"status": "stopped"}
+        return {
+            "status": "success",
+            "heard": result["text"],
+            "response": response,
+            "spoken": spoken,
+        }
 
 
-def build_voice_interface_tools(registry, brain=None):
-    if brain is None:
-        return registry
-
-    interface = VoiceInterface(brain)
-    registry.register(
-        "listen_once",
-        "Listen through the default microphone once and return transcribed speech.",
-        interface.listen_once,
-    )
-    registry.register(
-        "voice_command",
-        "Listen once, send the recognized speech to Kavshara, and return its response.",
-        interface.voice_command,
-    )
-    return registry
+def voice_status():
+    return {
+        "speech_input": "SpeechRecognition + Google en-IN",
+        "speech_output": "Windows System.Speech",
+        "model": MODEL,
+        "mode": "foreground push-to-talk",
+        "language": "English / Hindi / Hinglish",
+    }
