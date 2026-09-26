@@ -17,7 +17,7 @@ class Agent:
         return SYSTEM_PROMPT + """
 \nYou are an agent, not only a chatbot.
 For coding tasks, inspect existing files before changing them when useful.
-After writing Python code, use inspect_python and, when appropriate, run_python.
+Before changing an unfamiliar project, use project_summary or scan_project and find_in_project to understand its structure.\nAfter writing Python code, use inspect_python and, when appropriate, run_python.
 If a tool returns an error, diagnose it and try a reasonable correction.
 Do not claim a task is complete until the available evidence supports it.
 
