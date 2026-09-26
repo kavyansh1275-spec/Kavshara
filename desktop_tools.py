@@ -153,6 +153,86 @@ def get_file_info(path):
         return {"error": str(exc)}
 
 
+def _allowed_target(path):
+    target = Path(path).expanduser().resolve()
+    if not _is_allowed(target):
+        return None, {"error": "For safety, file access is limited to approved user-content folders."}
+    return target, None
+
+
+def write_desktop_file(path, content):
+    denied = _require_access()
+    if denied:
+        return denied
+    target, error = _allowed_target(path)
+    if error:
+        return error
+    if target.exists() and target.is_dir():
+        return {"error": "Target is a directory."}
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(str(content), encoding="utf-8")
+        return {"status": "written", "path": str(target), "size_bytes": target.stat().st_size}
+    except OSError as exc:
+        return {"status": "failed", "error": str(exc)}
+
+
+def create_directory(path):
+    denied = _require_access()
+    if denied:
+        return denied
+    target, error = _allowed_target(path)
+    if error:
+        return error
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+        return {"status": "created", "path": str(target)}
+    except OSError as exc:
+        return {"status": "failed", "error": str(exc)}
+
+
+def copy_desktop_file(source, destination):
+    denied = _require_access()
+    if denied:
+        return denied
+    src, error = _allowed_target(source)
+    if error:
+        return error
+    dst, error = _allowed_target(destination)
+    if error:
+        return error
+    if not src.exists() or not src.is_file():
+        return {"error": "Source file does not exist or is not a file."}
+    try:
+        import shutil
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        return {"status": "copied", "source": str(src), "destination": str(dst)}
+    except OSError as exc:
+        return {"status": "failed", "error": str(exc)}
+
+
+def rename_desktop_path(source, destination):
+    denied = _require_access()
+    if denied:
+        return denied
+    src, error = _allowed_target(source)
+    if error:
+        return error
+    dst, error = _allowed_target(destination)
+    if error:
+        return error
+    if not src.exists():
+        return {"error": "Source path does not exist."}
+    if dst.exists():
+        return {"error": "Destination already exists; rename was not performed."}
+    try:
+        src.rename(dst)
+        return {"status": "renamed", "source": str(src), "destination": str(dst)}
+    except OSError as exc:
+        return {"status": "failed", "error": str(exc)}
+
+
 def build_desktop_tools(registry):
     registry.register(
         "list_desktop_roots",
@@ -185,6 +265,10 @@ def build_desktop_tools(registry):
         get_file_info,
     )
     registry.register("system_info", "Return basic Windows and Kavshara runtime information.", system_info)
+    registry.register("write_desktop_file", "Write UTF-8 text to an approved user-content file. Arguments: path, content.", write_desktop_file)
+    registry.register("create_directory", "Create a directory inside approved user-content folders. Argument: path.", create_directory)
+    registry.register("copy_desktop_file", "Copy an approved file to another approved location. Arguments: source, destination.", copy_desktop_file)
+    registry.register("rename_desktop_path", "Rename an approved file or folder without overwriting an existing destination. Arguments: source, destination.", rename_desktop_path)
     return registry
 
 
