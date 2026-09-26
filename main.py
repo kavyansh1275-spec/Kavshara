@@ -1,5 +1,6 @@
 from brain import Brain
 from config import APP_NAME
+from permissions import request_desktop_access
 
 
 def print_help():
