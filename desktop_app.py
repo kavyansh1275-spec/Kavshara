@@ -1,6 +1,6 @@
 import threading
 import tkinter as tk
-from tkinter import messagebox, scrolledtext
+from tkinter import scrolledtext
 
 from brain import Brain
 from permissions import get_permissions, request_desktop_access, revoke_desktop_access
@@ -10,7 +10,7 @@ from voice_interface import VoiceInterface
 class KavsharaDesktopApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Kavshara")
+        self.root.title("Kavshara — Hinglish Voice + Coding")
         self.root.geometry("900x650")
         self.brain = Brain()
         self.voice = VoiceInterface(self.brain)
@@ -23,7 +23,9 @@ class KavsharaDesktopApp:
         self.status = tk.Label(top, text=self._status_text())
         self.status.pack(side="right")
 
-        self.chat = scrolledtext.ScrolledText(self.root, wrap="word", state="disabled", font=("Segoe UI", 11))
+        self.chat = scrolledtext.ScrolledText(
+            self.root, wrap="word", state="disabled", font=("Segoe UI", 11)
+        )
         self.chat.pack(fill="both", expand=True, padx=12, pady=6)
 
         bottom = tk.Frame(self.root)
@@ -32,20 +34,21 @@ class KavsharaDesktopApp:
         self.entry.pack(side="left", fill="x", expand=True)
         self.entry.bind("<Return>", lambda _event: self.send())
         tk.Button(bottom, text="Send", command=self.send).pack(side="left", padx=5)
-        tk.Button(bottom, text="🎤 Voice", command=self.voice_once).pack(side="left")
+        self.voice_button = tk.Button(bottom, text="🎤 Talk to Kavshara", command=self.voice_once)
+        self.voice_button.pack(side="left")
 
         actions = tk.Frame(self.root)
         actions.pack(fill="x", padx=12, pady=(0, 10))
-        tk.Button(actions, text="Desktop Access", command=self.request_access).pack(side="left")
-        tk.Button(actions, text="Refresh Status", command=self.refresh_status).pack(side="left", padx=5)
+        tk.Button(actions, text="Coding Access", command=self.request_access).pack(side="left")
+        tk.Button(actions, text="Refresh", command=self.refresh_status).pack(side="left", padx=5)
         tk.Button(actions, text="Revoke Access", command=self.revoke_access).pack(side="left", padx=5)
         tk.Button(actions, text="Clear", command=self.clear).pack(side="right")
 
-        self._append("Kavshara", "Ready. Ask me to research, code, work with approved files, or open an application.")
+        self._append("Kavshara", "Haan, main ready hoon. Bolo ya code ka kaam do. ❤️")
 
     def _status_text(self):
         perms = get_permissions()
-        desktop = "Desktop: ON" if perms.get("desktop_access") else "Desktop: OFF"
+        desktop = "Coding files: ON" if perms.get("desktop_access") else "Coding files: OFF"
         ollama = "Ollama: ON" if self.brain.provider.is_available() else "Ollama: OFF"
         return f"{desktop} | {ollama}"
 
@@ -60,12 +63,12 @@ class KavsharaDesktopApp:
 
     def request_access(self):
         result = request_desktop_access()
-        self._append("Kavshara", result["status"].capitalize() + " desktop access.")
+        self._append("Kavshara", result["status"].capitalize() + " coding-file access.")
         self.refresh_status()
 
     def revoke_access(self):
         revoke_desktop_access()
-        self._append("Kavshara", "Desktop access revoked.")
+        self._append("Kavshara", "Theek hai, coding-file access revoke kar diya.")
         self.refresh_status()
 
     def clear(self):
@@ -85,25 +88,29 @@ class KavsharaDesktopApp:
         try:
             answer = self.brain.respond(text)
         except Exception as exc:
-            answer = f"Error: {exc}"
+            answer = f"Oops, kuch error aaya: {exc}"
         self.root.after(0, lambda: self._append("Kavshara", answer))
 
     def voice_once(self):
-        self._append("Kavshara", "Listening...")
+        self.voice_button.configure(state="disabled", text="🎤 Listening...")
+        self._append("Kavshara", "Haan, bolo... I'm listening.")
         threading.Thread(target=self._voice_worker, daemon=True).start()
 
     def _voice_worker(self):
         result = self.voice.voice_command(speak_response=True)
-        if result.get("status") == "success":
-            self.root.after(0, lambda: self._append("You (voice)", result["heard"]))
-            self.root.after(0, lambda: self._append("Kavshara", result["response"]))
-        else:
-            self.root.after(0, lambda: self._append("Kavshara", result.get("error", "Voice input failed.")))
+        def update():
+            self.voice_button.configure(state="normal", text="🎤 Talk to Kavshara")
+            if result.get("status") == "success":
+                self._append("You (voice)", result["heard"])
+                self._append("Kavshara", result["response"])
+            else:
+                self._append("Kavshara", result.get("error", "Voice input failed."))
+        self.root.after(0, update)
 
 
 def main():
     root = tk.Tk()
-    app = KavsharaDesktopApp(root)
+    KavsharaDesktopApp(root)
     root.mainloop()
 
 
