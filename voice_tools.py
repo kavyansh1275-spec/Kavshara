@@ -37,8 +37,8 @@ def voice_status():
     return {
         "speech_output": "Windows System.Speech",
         "local_model": MODEL,
-        "voice_input": "not enabled yet",
-        "note": "Voice output works without an external API; microphone transcription is planned for a later voice layer.",
+        "voice_input": "SpeechRecognition + Google en-IN recognition",
+        "note": "Microphone input is explicit and foreground-only; continuous listening is never started automatically.",
     }
 
 
