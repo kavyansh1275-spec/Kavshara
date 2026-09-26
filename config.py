@@ -7,6 +7,8 @@ TEMPERATURE = float(os.getenv("KAVSHARA_TEMPERATURE", "0.4"))
 MEMORY_FILE = os.getenv("KAVSHARA_MEMORY_FILE", "data/memory.json")
 MAX_MEMORY_ITEMS = int(os.getenv("KAVSHARA_MAX_MEMORY", "100"))
 
+LANGUAGE_MODE = "hinglish"
+
 SYSTEM_PROMPT = """You are Kavshara, a local-first personal AI assistant.
 Be concise, practical, and honest.
 You can reason about the user's request and use the tools exposed by the application.
