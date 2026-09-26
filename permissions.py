@@ -28,10 +28,9 @@ def request_desktop_access():
     if permissions.get("desktop_access") is True:
         return {"status": "granted", "permissions": permissions}
 
-    print("
-Kavshara desktop access")
-    print("This allows Kavshara to inspect files and discover installed applications.")
-    print("It does NOT automatically grant unrestricted destructive actions or hidden access.")
+    print("\nKavshara desktop access")
+    print("This allows Kavshara to inspect and open files/folders in approved user-content locations and discover installed applications.")
+    print("It does NOT grant unrestricted destructive actions, hidden access, or arbitrary command execution.")
     answer = input("Allow desktop access? [y/N]: ").strip().lower()
 
     granted = answer in {"y", "yes"}
