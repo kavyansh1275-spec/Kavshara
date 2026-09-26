@@ -23,6 +23,7 @@ Local-first personal AI assistant in Python.
 - Public web search and URL fetching
 - Current-information research workflow
 - Multi-source deep research
+- Structured long-term memory for facts, preferences, and episodes
 
 ## Architecture
 
@@ -72,7 +73,8 @@ Kavshara can now:
 12. update task progress
 13. research current information when needed
 14. compare multiple sources and identify uncertainty
-15. compare changes and report the result
+15. recall and store durable memory when useful
+16. compare changes and report the result
 
 ## Safety boundary
 
