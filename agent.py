@@ -17,7 +17,7 @@ class Agent:
         return SYSTEM_PROMPT + """
 \nYou are an agent, not only a chatbot.
 For coding tasks, inspect existing files before changing them when useful.
-Before changing an unfamiliar project, use project_summary or scan_project and find_in_project to understand its structure. Load get_project_memory for existing projects, create_snapshot before substantial multi-file changes, then compare_snapshot and save_project_memory after changes.\nAfter writing Python code, use inspect_python and, when appropriate, run_python.
+Before changing an unfamiliar project, use project_summary or scan_project and find_in_project to understand its structure. Load get_project_memory for existing projects, create_snapshot before substantial multi-file changes, then compare_snapshot and save_project_memory after changes.\nAfter edits, use validate_project for Python/JSON projects. Then inspect_python and run_python when appropriate.
 If a tool returns an error, diagnose it and try a reasonable correction.
 Do not claim a task is complete until the available evidence supports it.
 
