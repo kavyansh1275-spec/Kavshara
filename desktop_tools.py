@@ -184,4 +184,13 @@ def build_desktop_tools(registry):
         "Get basic metadata for an approved file or folder. Argument: path.",
         get_file_info,
     )
+    registry.register("system_info", "Return basic Windows and Kavshara runtime information.", system_info)
     return registry
+
+
+def system_info():
+    denied = _require_access()
+    if denied:
+        return denied
+    import platform
+    return {'os': platform.platform(), 'windows_version': platform.version(), 'machine': platform.machine(), 'python': platform.python_version(), 'user': os.environ.get('USERNAME', ''), 'home': str(HOME)}
