@@ -160,6 +160,7 @@ def build_default_registry():
     from web_tools import build_web_tools
     from research_tools import build_research_tools
     from memory_tools import build_memory_tools
+    from engine_tools import build_engine_tools
 
     registry = ToolRegistry()
     registry.register("list_files", "List files/directories inside the workspace. Argument: path optional.", list_files)
@@ -174,4 +175,5 @@ def build_default_registry():
     build_web_tools(registry)
     build_research_tools(registry)
     build_memory_tools(registry)
+    build_engine_tools(registry)
     return registry
