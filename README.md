@@ -31,6 +31,7 @@ Local-first personal AI assistant in Python.
 - Controlled Windows desktop gateway for common user folders
 - Windows Start Menu application discovery and launching
 - Local Windows text-to-speech output
+- Speech-to-text input foundation
 
 ## Architecture
 
@@ -88,7 +89,8 @@ Kavshara can now:
 20. use controlled desktop access when permitted
 21. discover and launch approved Start Menu applications
 22. speak responses through Windows TTS when requested
-23. compare changes and report the result
+23. transcribe audio through speech recognition when available
+24. compare changes and report the result
 
 ## Safety boundary
 
