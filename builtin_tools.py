@@ -17,7 +17,6 @@ def list_files(path="."):
         return {"error": "Path does not exist"}
     if not root.is_dir():
         return {"error": "Path is not a directory"}
-
     return {
         "path": str(root.relative_to(WORKSPACE)),
         "files": [
@@ -52,6 +51,7 @@ def write_file(path, content):
 
 def build_default_registry():
     from tools import ToolRegistry
+    from coding_tools import build_coding_tools
 
     registry = ToolRegistry()
     registry.register(
@@ -69,4 +69,5 @@ def build_default_registry():
         "Create or replace a UTF-8 text file inside the workspace. Arguments: path, content.",
         write_file,
     )
+    build_coding_tools(registry)
     return registry
