@@ -26,6 +26,8 @@ Local-first personal AI assistant in Python.
 - Structured long-term memory for facts, preferences, and episodes
 - Autonomous project-engineering plans
 - Safe self-testing and static QA
+- English, Hindi, and Hinglish conversation support
+- Explicit desktop-access permission layer
 
 ## Architecture
 
@@ -78,7 +80,9 @@ Kavshara can now:
 15. recall and store durable memory when useful
 16. execute and track autonomous engineering plans
 17. run safe QA checks before completion
-18. compare changes and report the result
+18. respect desktop permissions before local access
+19. communicate naturally in the user's language
+20. compare changes and report the result
 
 ## Safety boundary
 
