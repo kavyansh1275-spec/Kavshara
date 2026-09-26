@@ -28,8 +28,8 @@ Local-first personal AI assistant in Python.
 - Safe self-testing and static QA
 - English, Hindi, and Hinglish conversation support
 - Explicit desktop-access permission layer
-- Controlled Windows desktop gateway for common user folders
-- Windows Start Menu application discovery and launching
+- Controlled Windows desktop gateway for approved user-content folders (Desktop, Documents, Downloads, Pictures, Videos, Music, OneDrive)
+- Windows Start Menu application discovery and launching\n- Safe opening of approved files and folders\n- Directory listing and basic file metadata inspection
 - Local Windows text-to-speech output
 - Speech-to-text input foundation
 - Interactive microphone voice commands
