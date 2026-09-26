@@ -11,6 +11,9 @@ Local-first personal AI assistant in Python.
 - Safe workspace filesystem tools
 - Python syntax inspection
 - Controlled Python execution
+- Project structure scanning
+- Project summaries and entrypoint detection
+- Cross-file text search
 - Automatic tool-result feedback
 
 ## Architecture
@@ -47,14 +50,16 @@ Create a Python calculator at projects/calculator.py, test it, and fix any synta
 ```
 
 Kavshara can now:
-1. inspect the workspace
-2. create/edit files
-3. inspect Python syntax
-4. run Python files
-5. read execution errors
-6. make another change
-7. test again
-8. report the result
+1. scan and understand a project structure
+2. find relevant code across files
+3. inspect the workspace
+4. create/edit files
+5. inspect Python syntax
+6. run Python files
+7. read execution errors
+8. make another change
+9. test again
+10. report the result
 
 ## Safety boundary
 
