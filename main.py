@@ -20,7 +20,7 @@ Commands:
 def main():
     brain = Brain()
 
-    print(f"{APP_NAME} V1")
+    print(f"{APP_NAME} V20 foundation")
     print("Local-first AI assistant")
     print("Type /help for commands.\n")
 
