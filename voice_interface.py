@@ -40,24 +40,31 @@ class VoiceInterface:
         except OSError as exc:
             return {"status": "failed", "error": str(exc)}
 
-    def voice_command(self):
+    def voice_command(self, speak_response=False):
         result = self.listen_once()
         if result.get("status") != "success":
             return result
 
         response = self.brain.respond(result["text"])
-        return {"status": "success", "heard": result["text"], "response": response}
+        spoken = False
+        if speak_response:
+            try:
+                from voice_tools import speak
+                spoken = speak(response).get("status") == "success"
+            except Exception:
+                spoken = False
+        return {"status": "success", "heard": result["text"], "response": response, "spoken": spoken}
 
     def stop(self):
         self.stop_event.set()
 
-    def run_loop(self, callback=None, interval=0.2):
+    def run_loop(self, callback=None, interval=0.2, speak_response=False):
         if not get_permissions().get("desktop_access"):
             return {"error": "Desktop access is not granted."}
 
         self.stop_event.clear()
         while not self.stop_event.is_set():
-            result = self.voice_command()
+            result = self.voice_command(speak_response=speak_response)
             if callback:
                 callback(result)
             if result.get("status") == "failed":
