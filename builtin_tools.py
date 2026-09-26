@@ -31,45 +31,29 @@ def read_file(path):
     if not target.exists() or not target.is_file():
         return {"error": "File does not exist or is not a file"}
     text = target.read_text(encoding="utf-8")
-    return {
-        "path": str(target.relative_to(WORKSPACE)),
-        "content": text[:20000],
-        "truncated": len(text) > 20000,
-    }
+    return {"path": str(target.relative_to(WORKSPACE)), "content": text[:20000], "truncated": len(text) > 20000}
 
 
 def write_file(path, content):
     target = _safe_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(content, encoding="utf-8")
-    return {
-        "path": str(target.relative_to(WORKSPACE)),
-        "bytes": target.stat().st_size,
-        "status": "written",
-    }
+    return {"path": str(target.relative_to(WORKSPACE)), "bytes": target.stat().st_size, "status": "written"}
 
 
 def build_default_registry():
     from tools import ToolRegistry
     from coding_tools import build_coding_tools
     from project_tools import build_project_tools
+    from project_memory import build_project_memory_tools
+    from snapshot_tools import build_snapshot_tools
 
     registry = ToolRegistry()
-    registry.register(
-        "list_files",
-        "List files/directories inside the workspace. Argument: path optional.",
-        list_files,
-    )
-    registry.register(
-        "read_file",
-        "Read a UTF-8 text file inside the workspace. Argument: path.",
-        read_file,
-    )
-    registry.register(
-        "write_file",
-        "Create or replace a UTF-8 text file inside the workspace. Arguments: path, content.",
-        write_file,
-    )
+    registry.register("list_files", "List files/directories inside the workspace. Argument: path optional.", list_files)
+    registry.register("read_file", "Read a UTF-8 text file inside the workspace. Argument: path.", read_file)
+    registry.register("write_file", "Create or replace a UTF-8 text file inside the workspace. Arguments: path, content.", write_file)
     build_coding_tools(registry)
     build_project_tools(registry)
+    build_project_memory_tools(registry)
+    build_snapshot_tools(registry)
     return registry
