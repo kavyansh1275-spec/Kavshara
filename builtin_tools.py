@@ -52,6 +52,7 @@ def write_file(path, content):
 def build_default_registry():
     from tools import ToolRegistry
     from coding_tools import build_coding_tools
+    from project_tools import build_project_tools
 
     registry = ToolRegistry()
     registry.register(
@@ -70,4 +71,5 @@ def build_default_registry():
         write_file,
     )
     build_coding_tools(registry)
+    build_project_tools(registry)
     return registry
