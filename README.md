@@ -29,6 +29,7 @@ Local-first personal AI assistant in Python.
 - English, Hindi, and Hinglish conversation support
 - Explicit desktop-access permission layer
 - Controlled Windows desktop gateway for common user folders
+- Windows Start Menu application discovery and launching
 
 ## Architecture
 
@@ -84,7 +85,8 @@ Kavshara can now:
 18. respect desktop permissions before local access
 19. communicate naturally in the user's language
 20. use controlled desktop access when permitted
-21. compare changes and report the result
+21. discover and launch approved Start Menu applications
+22. compare changes and report the result
 
 ## Safety boundary
 
