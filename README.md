@@ -37,6 +37,7 @@ Local-first personal AI assistant in Python.
 - Explicit desktop-access status and controls
 - Controlled text-file creation, copying, renaming, and directory creation
 - Controlled HTTP/HTTPS browser opening
+- V11-V20 advanced foundations: research knowledge base, disabled workflows, project version records, reusable skills, local knowledge graph, explicit model-routing policy, and integrated personal workspace foundation
 
 ## Architecture
 
@@ -118,3 +119,21 @@ Workspace tools stay inside `workspace/`. Desktop tools are separately permissio
 ## Automated QA
 
 GitHub Actions runs Python compilation, core-module imports, and a web-fetch safety smoke test on pushes and pull requests.
+
+
+## V11-V20 roadmap
+
+| Version | Foundation |
+|---|---|
+| V11 | Controlled Windows desktop interaction |
+| V12 | Research and local knowledge base |
+| V13 | Permission-gated workflow definitions |
+| V14 | Project/version records |
+| V15 | Reusable skill registry |
+| V16 | Unified knowledge graph |
+| V17 | Explicit local/cloud model routing policy |
+| V18 | Advanced coding/editing orchestration foundation |
+| V19 | Integrated personal workspace foundation |
+| V20 | Unified Kavshara OS foundation |
+
+The advanced workflow system stores workflow definitions but does not execute arbitrary commands, and workflows start disabled. Cloud model routing is disabled unless explicitly opted in through environment configuration.
