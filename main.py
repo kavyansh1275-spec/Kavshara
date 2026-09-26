@@ -1,6 +1,5 @@
 from brain import Brain
 from config import APP_NAME
-from permissions import request_desktop_access
 from voice_interface import VoiceInterface
 
 
@@ -10,7 +9,7 @@ Commands:
   /help      Show this help
   /status    Show Kavshara status
   /remember  Save something to memory
-  /voice     Listen to one voice command
+  /voice     Listen and reply by voice
   /access    Show desktop permission status
   /revoke    Revoke desktop access
   /exit      Quit Kavshara
@@ -19,26 +18,35 @@ Commands:
 
 def main():
     brain = Brain()
+    voice = VoiceInterface(brain)
 
-    print(f"{APP_NAME} V20 foundation")
-    print("Local-first AI assistant")
+    print(f"{APP_NAME} — Hinglish Voice + Coding Assistant")
+    print("Bolo, type karo, ya /voice use karo. Main coding mein help karungi.")
     print("Type /help for commands.\n")
 
     if not brain.provider.is_available():
-        print("Warning: Ollama is not reachable.")
-        print("Start Ollama, then run Kavshara again.\n")
+        print("Ollama reachable nahi hai. Ollama start karke Kavshara dobara run karo.\n")
 
     while True:
         try:
             user_input = input("You > ").strip()
         except (KeyboardInterrupt, EOFError):
-            print("\nGoodbye.")
+            print("\nBye! Take care.")
             break
 
         if not user_input:
             continue
 
         command = user_input.lower()
+
+        if command == "/voice":
+            result = voice.voice_command(speak_response=True)
+            if result.get("status") == "success":
+                print("You (voice) > " + result["heard"])
+                print("Kavshara > " + result["response"])
+            else:
+                print("Voice error > " + result.get("error", "No speech detected."))
+            continue
 
         if command == "/access":
             from permissions import get_permissions
@@ -50,18 +58,8 @@ def main():
             print(revoke_desktop_access())
             continue
 
-        if command == "/voice":
-            interface = VoiceInterface(brain)
-            result = interface.voice_command(speak_response=True)
-            if result.get("status") == "success":
-                print("You (voice) > " + result["heard"])
-                print("Kavshara > " + result["response"])
-            else:
-                print("Voice error > " + result.get("error", "No speech detected."))
-            continue
-
         if command == "/exit":
-            print("Goodbye.")
+            print("Bye! Take care.")
             break
 
         if command == "/help":
