@@ -167,4 +167,5 @@ def build_default_registry():
     build_project_memory_tools(registry)
     build_snapshot_tools(registry)
     build_validation_tools(registry)
+    build_task_tools(registry)
     return registry
