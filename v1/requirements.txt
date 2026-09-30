@@ -1,0 +1,1 @@
+# Kavshara V1 intentionally uses only Python standard-library modules.
