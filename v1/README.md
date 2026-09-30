@@ -13,14 +13,14 @@ A clean, local AI conversation foundation for Kavshara using Ollama/Qwen.
 From the repository root:
 
 ```powershell
-cd v1
-python main.py
+python -m v1.main
 ```
 
 The default model is `qwen2.5:3b`. You can change it with:
 
 ```powershell
 $env:KAVSHARA_MODEL="qwen2.5:3b"
+python -m v1.main
 ```
 
 Other supported environment variables:
