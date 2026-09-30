@@ -92,3 +92,72 @@ Voice / Text
 - There is no unrestricted shell tool.
 - Kavshara does not silently access the microphone.
 - Kavshara does not pretend an action succeeded when it did not.
+
+
+## V3 — Controlled Windows Computer Agent
+
+V3 extends the V2 tool system with a controlled Windows computer layer.
+
+Capabilities:
+- open/close applications
+- open files/folders
+- take on-demand screenshots
+- read current screen state as a screenshot reference
+- mouse movement/clicks
+- keyboard input
+- restricted terminal commands
+- action verification where possible
+- validation, risk metadata, permissions, logging, and timeouts
+
+Computer tools are registered through the existing V2 ToolRegistry. The agent chooses tools from structured metadata; `main.py` does not contain natural-language command mappings.
+
+### Enable desktop access
+
+Run:
+
+```powershell
+python main.py
+```
+
+Then use:
+
+```
+/grant
+```
+
+or:
+
+```
+/access
+```
+
+V3 does not implement purchases, messaging, email sending, autonomous browsing, continuous observation, or autonomous learning.
+
+### Test V3
+
+Install the V3 computer dependencies:
+
+```powershell
+pip install pyautogui psutil
+```
+
+Run:
+
+```powershell
+python -m compileall -q .
+python -m unittest discover -s tests -v
+```
+
+Computer actions are logged to:
+
+```
+data/computer_actions.jsonl
+```
+
+Screenshots are stored locally under:
+
+```
+data/computer_screenshots/
+```
+
+The terminal tool is deliberately allowlisted and uses `shell=False`. Shell operators and unrestricted/destructive commands are rejected.
