@@ -1,27 +1,25 @@
-name: Kavshara QA
+name: Kavshara V1 QA
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "v1-foundation"]
   pull_request:
 
 jobs:
-  syntax-and-smoke:
+  v1-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Install PortAudio build dependency
-        run: sudo apt-get update && sudo apt-get install -y portaudio19-dev
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
-          cache-dependency-path: requirements.txt
-      - name: Install dependencies
-        run: python -m pip install -r requirements.txt
-      - name: Compile Python
-        run: python -m compileall -q .
-      - name: Import core modules
-        run: python -c "import agent, brain, builtin_tools, desktop_tools, web_tools, memory_tools, qa_tools, voice_interface"
-      - name: Smoke test web URL policy
-        run: python -c "from web_tools import fetch_url; assert 'not allowed' in fetch_url('http://127.0.0.1:11434').get('error','').lower()"
+
+      - name: Compile V1
+        run: python -m compileall -q v1
+
+      - name: Run V1 unit tests
+        run: python -m unittest discover -s v1/tests -p "test_*.py" -v
