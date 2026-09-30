@@ -5,7 +5,7 @@ A clean, local AI conversation foundation for Kavshara using Ollama/Qwen.
 ## Requirements
 
 - Python 3.11+
-- Ollama installed and running
+- Ollama installed and running for the interactive app
 - A local Ollama model, for example `qwen2.5:3b`
 
 ## Run
@@ -30,6 +30,18 @@ Other supported environment variables:
 - `KAVSHARA_TEMPERATURE` — default `0.7`
 - `KAVSHARA_REQUEST_TIMEOUT` — default `120`
 - `KAVSHARA_LOG_LEVEL` — default `INFO`
+
+## Test
+
+V1 uses Python's standard-library `unittest`, so no extra test package is required.
+
+From the repository root:
+
+```powershell
+python -m unittest discover -s v1/tests -p "test_*.py" -v
+```
+
+The test suite mocks the Ollama HTTP request, so Ollama does not need to be running for tests.
 
 ## Architecture
 
