@@ -140,6 +140,7 @@ def build_default_registry():
     from task_tools import build_task_tools
     from memory_tools import build_memory_tools
     from voice_tools import build_voice_tools
+    from computer_agent import build_computer_tools
 
     registry = ToolRegistry()
     registry.register("list_files", "List files/directories inside the coding workspace. Argument: path optional.", list_files)
@@ -154,4 +155,5 @@ def build_default_registry():
     build_task_tools(registry)
     build_memory_tools(registry)
     build_voice_tools(registry)
+    build_computer_tools(registry)
     return registry
