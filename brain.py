@@ -1,15 +1,26 @@
 from agent import Agent
 from ai_provider import OllamaProvider
 from memory import Memory
-from builtin_tools import build_default_registry
+from specialist_tools.registry import build_specialist_registry
 
 
 class Brain:
-    def __init__(self, provider=None, memory=None, tools=None):
+    def __init__(self, provider=None, memory=None, tools=None, executor=None):
         self.provider = provider or OllamaProvider()
         self.memory = memory or Memory()
-        self.tools = tools or build_default_registry()
-        self.agent = Agent(self.provider, self.tools, self.memory)
+
+        if tools is None or executor is None:
+            self.tools, self.executor = build_specialist_registry()
+        else:
+            self.tools = tools
+            self.executor = executor
+
+        self.agent = Agent(
+            self.provider,
+            self.tools,
+            self.executor,
+            self.memory,
+        )
 
     def respond(self, user_message):
         text = user_message.strip()
@@ -29,5 +40,6 @@ class Brain:
             "model": self.provider.model,
             "ollama": self.provider.is_available(),
             "tools": self.tools.names(),
+            "tool_metadata": self.tools.metadata(),
             "memory_items": len(self.memory.items),
         }
