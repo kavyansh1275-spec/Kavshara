@@ -11,6 +11,7 @@ Commands:
   /remember  Save something to memory
   /voice     Listen and reply by voice
   /access    Show desktop permission status
+  /grant     Request/enable desktop access
   /revoke    Revoke desktop access
   /exit      Quit Kavshara
 """)
@@ -51,6 +52,11 @@ def main():
         if command == "/access":
             from permissions import get_permissions
             print(get_permissions())
+            continue
+
+        if command == "/grant":
+            from permissions import request_desktop_access
+            print(request_desktop_access())
             continue
 
         if command == "/revoke":
