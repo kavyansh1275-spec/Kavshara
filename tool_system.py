@@ -144,8 +144,7 @@ class ToolExecutor:
                 metadata={"risk_level": metadata.risk_level.value},
             ).to_dict()
 
-        if arguments is None:
-            arguments = {}
+        arguments = {} if arguments is None else arguments
         if not isinstance(arguments, dict):
             return ToolResult(
                 tool=name,
@@ -154,11 +153,19 @@ class ToolExecutor:
                 duration_ms=_elapsed_ms(started),
             ).to_dict()
 
-        try:
-            with ThreadPoolExecutor(max_workers=1) as pool:
-                future = pool.submit(tool.execute, arguments)
-                output = future.result(timeout=metadata.timeout_seconds)
+        schema_error = _validate_arguments(metadata.input_schema, arguments)
+        if schema_error:
+            return ToolResult(
+                tool=name,
+                status="invalid_arguments",
+                error=schema_error,
+                duration_ms=_elapsed_ms(started),
+            ).to_dict()
 
+        pool = ThreadPoolExecutor(max_workers=1)
+        future = pool.submit(tool.execute, arguments)
+        try:
+            output = future.result(timeout=metadata.timeout_seconds)
             return ToolResult(
                 tool=name,
                 status="success",
@@ -167,6 +174,7 @@ class ToolExecutor:
                 metadata={"risk_level": metadata.risk_level.value},
             ).to_dict()
         except FutureTimeoutError:
+            future.cancel()
             return ToolResult(
                 tool=name,
                 status="timeout",
@@ -182,6 +190,23 @@ class ToolExecutor:
                 duration_ms=_elapsed_ms(started),
                 metadata={"risk_level": metadata.risk_level.value},
             ).to_dict()
+        finally:
+            pool.shutdown(wait=False, cancel_futures=True)
+
+
+def _validate_arguments(schema: dict[str, Any], arguments: dict[str, Any]) -> str | None:
+    required = schema.get("required", [])
+    missing = [key for key in required if key not in arguments]
+    if missing:
+        return f"Missing required argument(s): {', '.join(missing)}"
+
+    if schema.get("additionalProperties") is False:
+        allowed = set(schema.get("properties", {}))
+        unexpected = [key for key in arguments if key not in allowed]
+        if unexpected:
+            return f"Unexpected argument(s): {', '.join(unexpected)}"
+
+    return None
 
 
 def _elapsed_ms(started: float) -> int:
