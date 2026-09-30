@@ -12,9 +12,19 @@ class Agent:
 
     def _system_prompt(self):
         tool_text = "\n".join(
-            f"- {t['name']}: {t['description']}" for t in self.tools.descriptions()
+            f"- {t['name']}: {t['description']} | schema={t['input_schema']} | risk={t['risk_level']} | confirmation={t['requires_confirmation']}"
+            for t in self.tools.descriptions()
         )
         return SYSTEM_PROMPT + """
+
+TOOL SELECTION:
+- Understand the user's intent before selecting a tool.
+- Never hard-code natural-language command matching in main.py.
+- For computer requests, select the smallest appropriate computer.* tool and provide structured arguments matching its schema.
+- Treat tool arguments as untrusted data; never invent arguments outside the schema.
+- A successful tool result is not automatically success: inspect success, verified, status, and error fields.
+- If a tool returns confirmation_required or permission_required, do not bypass it.
+- Do not claim an action happened unless the tool result supports it.
 
 CODING WORKFLOW:
 - For coding requests, first inspect relevant files/project structure when needed.
@@ -22,7 +32,7 @@ CODING WORKFLOW:
 - Use validation, inspection, and test tools after meaningful changes.
 - Prefer a direct implementation over a long explanation.
 - You may use approved workspace tools for the coding project.
-- Do not use research, workflow, knowledge-graph, cloud-routing, or unrelated automation tools unless the user explicitly asks for that capability and it is actually available.
+- Do not use unrelated tools unless the user explicitly asks for that capability and it is actually available.
 
 TOOL PROTOCOL:
 When a tool is needed, respond with ONLY valid JSON:
@@ -30,7 +40,7 @@ When a tool is needed, respond with ONLY valid JSON:
 Never invent tool names or arguments.
 After a tool result, continue the task or provide the final answer.
 
-AVAILABLE CODING TOOLS:
+AVAILABLE TOOLS:
 """ + (tool_text or "- None.")
 
     def _parse_tool_call(self, text):
@@ -82,7 +92,7 @@ AVAILABLE CODING TOOLS:
                     "content": (
                         f"TOOL RESULT (step {step + 1}):\n"
                         + json.dumps(result, ensure_ascii=False, default=str)
-                        + "\n\nContinue the coding task and verify your work when appropriate."
+                        + "\n\nContinue the user task and verify actions when appropriate."
                     ),
                 }
             )
