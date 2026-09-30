@@ -10,7 +10,8 @@ except ImportError:
     psutil = None
 try:
     import pyautogui
-except ImportError:
+except Exception:
+    # Headless CI/Linux environments may not have a display. Windows runtime still uses pyautogui.
     pyautogui = None
 
 START_MENU_DIRS = [
