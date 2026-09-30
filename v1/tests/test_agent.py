@@ -1,7 +1,7 @@
-from core.agent import KavsharaAgent
-from conversation.manager import ConversationManager
-from core.types import Message
-from llm.base import LLMProvider
+from v1.core.agent import KavsharaAgent
+from v1.conversation.manager import ConversationManager
+from v1.core.types import Message
+from v1.llm.base import LLMProvider
 
 
 class FakeLLM(LLMProvider):
