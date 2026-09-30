@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import logging
 
-from config.settings import Settings
-from core.agent import KavsharaAgent
-from conversation.manager import ConversationManager
-from llm.ollama import OllamaError, OllamaProvider
-from utils.logging import configure_logging
+from .config.settings import Settings
+from .core.agent import KavsharaAgent
+from .conversation.manager import ConversationManager
+from .llm.ollama import OllamaError, OllamaProvider
+from .utils.logging import configure_logging
 
 logger = logging.getLogger(__name__)
 
