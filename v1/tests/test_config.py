@@ -1,4 +1,4 @@
-from config.settings import Settings
+from v1.config.settings import Settings
 
 
 def test_defaults() -> None:
