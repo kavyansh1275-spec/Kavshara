@@ -1,0 +1,1 @@
+"""Kavshara personality."""
