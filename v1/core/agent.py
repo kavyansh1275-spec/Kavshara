@@ -28,7 +28,6 @@ class KavsharaAgent(AgentInterface):
             response = self._llm.chat(self._conversation.messages())
         except Exception:
             logger.exception("Agent request failed")
-            # Remove the failed user turn so the in-memory conversation stays consistent.
             self._conversation.remove_last()
             raise
 
