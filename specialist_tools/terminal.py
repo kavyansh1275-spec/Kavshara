@@ -67,16 +67,26 @@ class TerminalTool:
         timeout = float(arguments.get("timeout_seconds", DEFAULT_TIMEOUT))
         timeout = max(1.0, min(timeout, 30.0))
 
-        env = os.environ.copy()
-        result = subprocess.run(
-            command,
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            shell=False,
-            env=env,
-        )
+        try:
+            result = subprocess.run(
+                command,
+                cwd=cwd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                shell=False,
+                env=os.environ.copy(),
+            )
+        except subprocess.TimeoutExpired as exc:
+            return {
+                "status": "timeout",
+                "error": f"Command exceeded {timeout:.1f}s.",
+                "stdout": (exc.stdout or "")[:MAX_OUTPUT],
+                "stderr": (exc.stderr or "")[:MAX_OUTPUT],
+                "cwd": str(cwd.relative_to(self.workspace)),
+                "command": command,
+            }
+
         return {
             "status": "success" if result.returncode == 0 else "failed",
             "return_code": result.returncode,
