@@ -1,5 +1,5 @@
-from conversation.manager import ConversationManager
-from core.types import Message
+from v1.conversation.manager import ConversationManager
+from v1.core.types import Message
 
 
 def test_conversation_add_and_clear() -> None:
