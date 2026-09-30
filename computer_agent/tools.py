@@ -117,6 +117,8 @@ def keyboard_hotkey(keys):
     return _run("computer.keyboard.hotkey", "keyboard_hotkey", {"keys": keys}, HOTKEY_SCHEMA, "MEDIUM", lambda keys: keyboard("hotkey", keys=keys))
 
 def terminal_execute(command, cwd=None, timeout=10):
-    return _run("computer.terminal.execute", "terminal_execute",
-                {"command": command, "cwd": cwd, "timeout": timeout}, TERMINAL_SCHEMA, "HIGH",
-                lambda command, cwd, timeout: terminal(command, cwd, timeout))
+    args = {"command": command, "timeout": timeout}
+    if cwd is not None:
+        args["cwd"] = cwd
+    return _run("computer.terminal.execute", "terminal_execute", args, TERMINAL_SCHEMA, "HIGH",
+                lambda **kwargs: terminal(**kwargs))
