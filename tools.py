@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 from typing import Any, Callable
 
 @dataclass
@@ -50,4 +51,18 @@ class ToolRegistry:
         args = arguments or {}
         if not isinstance(args, dict):
             raise ValueError("Tool arguments must be an object.")
-        return tool.function(**args)
+        executor = ThreadPoolExecutor(max_workers=1)
+        future = executor.submit(tool.function, **args)
+        try:
+            return future.result(timeout=max(1, int(tool.timeout)))
+        except FutureTimeout:
+            future.cancel()
+            return {
+                "success": False,
+                "status": "timeout",
+                "error_type": "ToolTimeout",
+                "tool": name,
+                "message": f"Tool exceeded its {tool.timeout}-second timeout.",
+            }
+        finally:
+            executor.shutdown(wait=False, cancel_futures=True)
